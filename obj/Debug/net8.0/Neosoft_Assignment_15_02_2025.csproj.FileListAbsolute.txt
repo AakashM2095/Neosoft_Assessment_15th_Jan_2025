@@ -1,0 +1,8 @@
+C:\Users\user\Desktop\Neosoft_Aakash_Malvankar_15_02_2025\Neosoft_Assignment_15_02_2025\obj\Debug\net8.0\Neosoft_Assignment_15_02_2025.csproj.AssemblyReference.cache
+C:\Users\user\Desktop\Neosoft_Aakash_Malvankar_15_02_2025\Neosoft_Assignment_15_02_2025\obj\Debug\net8.0\Neosoft_Assignment_15_02_2025.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Desktop\Neosoft_Aakash_Malvankar_15_02_2025\Neosoft_Assignment_15_02_2025\obj\Debug\net8.0\Neosoft_Assignment_15_02_2025.AssemblyInfoInputs.cache
+C:\Users\user\Desktop\Neosoft_Aakash_Malvankar_15_02_2025\Neosoft_Assignment_15_02_2025\obj\Debug\net8.0\Neosoft_Assignment_15_02_2025.AssemblyInfo.cs
+C:\Users\user\Desktop\Neosoft_Aakash_Malvankar_15_02_2025\Neosoft_Assignment_15_02_2025\obj\Debug\net8.0\Neosoft_Assignment_15_02_2025.csproj.CoreCompileInputs.cache
+C:\Users\user\Desktop\Neosoft_Aakash_Malvankar_15_02_2025\Neosoft_Assignment_15_02_2025\obj\Debug\net8.0\Neosoft_Assignment_15_02_2025.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\user\Desktop\Neosoft_Aakash_Malvankar_15_02_2025\Neosoft_Assignment_15_02_2025\obj\Debug\net8.0\Neosoft_Assignment_15_02_2025.RazorAssemblyInfo.cache
+C:\Users\user\Desktop\Neosoft_Aakash_Malvankar_15_02_2025\Neosoft_Assignment_15_02_2025\obj\Debug\net8.0\Neosoft_Assignment_15_02_2025.RazorAssemblyInfo.cs
