@@ -1,0 +1,188 @@
+﻿@model Neosoft_Assignment_15_02_2025.ViewModel.EmployeeViewModel
+
+@{
+    ViewData["Title"] = "Add Employee";
+}
+
+<h4>Add Employee</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="AddEmployee" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CountryId" class="control-label"></label>
+                <select id="CountryDropDown" asp-for="CountryId" class="form-control">
+                    <option value="">Select Country</option>
+                    @foreach (var country in ViewBag.Countries)
+                    {
+                        <option value="@country.Row_Id">@country.CountryName</option>
+                    }
+                </select>
+                <span asp-validation-for="CountryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StateId" class="control-label"></label>
+                <select id="stateDropdown" asp-for="StateId" class="form-control">
+                    <option value="">Select State</option>
+                </select>
+                <span asp-validation-for="StateId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CityId" class="control-label"></label>
+                <select id="cityDropdown" asp-for="CityId" class="form-control">
+                    <option value="">Select City</option>
+                </select>
+                <span asp-validation-for="CityId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PanNumber" class="control-label"></label>
+                <input asp-for="PanNumber" class="form-control" />
+                <span asp-validation-for="PanNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PassportNumber" class="control-label"></label>
+                <input asp-for="PassportNumber" class="form-control" />
+                <span asp-validation-for="PassportNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MobileNumber" class="control-label"></label>
+                <input asp-for="MobileNumber" class="form-control" />
+                <span asp-validation-for="MobileNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EmailAddress" class="control-label"></label>
+                <input asp-for="EmailAddress" class="form-control" />
+                <span asp-validation-for="EmailAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DateOfBirth" class="control-label"></label>
+                <input asp-for="DateOfBirth" class="form-control datepicker" />
+                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DateOfJoinee" class="control-label"></label>
+                <input asp-for="DateOfJoinee" class="form-control date" />
+                <span asp-validation-for="DateOfJoinee" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Image" class="control-label"></label>
+                <input asp-for="Image" type="file" class="form-control" />
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+            @* <div class="form-group">
+            <label asp-for="IsActive" class="control-label">Is Active</label>
+            <input asp-for="IsActive" type="checkbox" class="form-check-input" />
+            </div> *@
+            <div class="form-group">
+                <label asp-for="IsActiveBool" class="control-label">Is Active</label>
+                <input asp-for="IsActiveBool" type="checkbox" class="form-check-input" />
+                <span asp-validation-for="IsActiveBool" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Gender" class="control-label">Gender</label>
+                <div class="form-check">
+                    <input asp-for="Gender" type="radio" value="1" class="form-check-input" id="Male" />
+                    <label class="form-check-label" for="Male">Male</label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="Gender" type="radio" value="0" class="form-check-input" id="Female" />
+                    <label class="form-check-label" for="Female">Female</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            // Initialize datepicker
+            //$('.datepicker').datepicker({ format: 'mm/dd/yyyy' });
+
+            // Load states on country change
+            $('#CountryDropDown').change(function () {
+                const countryId = parseInt($(this).val());
+                debugger;
+                $('#stateDropdown').empty().append('<option value="">Select State</option>');
+                $('#cityDropdown').empty().append('<option value="">Select City</option>');
+
+                if (countryId) {
+                    $.ajax({
+                        url: '/Employee/GetStates',
+                        type: 'GET',
+                        data: { countryId: countryId },
+                        success: function (data) {
+                            console.log(data);
+                            if (data.length === 0) {
+                                alert('No states available for the selected country.');
+                                return;
+                            }
+                            const $stateDropdown = $('#stateDropdown');
+                            $.each(data, function (index, state) {
+                                $stateDropdown.append($('<option>', {
+                                    value: state.row_Id,
+                                    text: state.stateName
+                                }));
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching states:', status, error);
+                            alert('Error loading states.');
+                        }
+                    });
+                }
+            });
+
+            // Load cities on state change
+            $('#stateDropdown').change(function () {
+                const stateId = parseInt($(this).val());
+                debugger;
+                $('#cityDropdown').empty().append('<option value="">Select City</option>');
+
+                if (stateId) {
+                    $.ajax({
+                        url: '/Employee/GetCities',
+                        type: 'GET',
+                        data: { stateId: stateId },
+                        success: function (data) {
+                            console.log(data);
+                            if (data.length === 0) {
+                                alert('No cities available for the selected state.');
+                                return;
+                            }
+                            const $cityDropdown = $('#cityDropdown');
+                            $.each(data, function (index, city) {
+                                $cityDropdown.append($('<option>', {
+                                    value: city.row_Id,
+                                    text: city.cityName
+                                }));
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching cities:', status, error);
+                            alert('Error loading cities.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

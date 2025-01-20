@@ -1,4 +1,5 @@
 using Neosoft_Assignment_15_02_2025.DAL;
+using Neosoft_Assignment_15_02_2025.Interface;
 
 namespace Neosoft_Assignment_15_02_2025
 {
@@ -10,8 +11,7 @@ namespace Neosoft_Assignment_15_02_2025
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Services.AddSingleton<Employee_DAL>();
-
+            builder.Services.AddScoped<IEmployeeRepository,Employee_DAL>();
 
             var app = builder.Build();
 
@@ -32,7 +32,7 @@ namespace Neosoft_Assignment_15_02_2025
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Employee}/{action=Index}/{id?}");
 
             app.Run();
         }

@@ -1,0 +1,138 @@
+﻿@model IEnumerable<Neosoft_Assignment_15_02_2025.ViewModel.EmployeeViewModel>
+
+@{
+    ViewData["Title"] = "Employee Listing";
+}
+<head>
+<style>
+        .div.dataTables_wrapper div.dataTables_length select {
+            width : 100px;
+        }
+</style>
+</head>
+
+<div class="my-3">
+    <h2>Employee Listing</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Employee Records</h4>
+        <a asp-controller="Employee" asp-action="AddEmployee" class="btn btn-success">Add Employee</a>
+    </div>
+    <table id="employeeTable" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Country</th>
+                <th>State</th>
+                <th>City</th>
+                <th>Pan No</th>
+                <th>Passport No</th>
+                <th>Gender</th>
+                <th>IsActive</th>
+                <th>Profile Image</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model)
+            {
+                var photoPath = "~/Images/" + (employee.ExistingPhotoPath ?? "Employee.png");
+                <tr>
+                    <td>@employee.EmailAddress @employee.EmployeeCode</td>
+                    <td>@employee.CountryName</td>
+                    <td>@employee.StateName</td>
+                    <td>@employee.CityName</td>
+                    <td>@employee.PanNumber</td>
+                    <td>@employee.PassportNumber</td>
+                    <td>@(employee.Gender == 1 ? "Male" : "Female")</td>
+                    <td>@(employee.IsActive == 1 ? "Yes" : "No")</td>
+                    <td>
+                        <img class="card-img-top imageThumbnail" src="@photoPath" style="width: 15px; height:auto;" asp-append-version="true" />
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary edit-btn" data-id="@employee.EmployeeCode">Edit</button>
+                       @*  <a asp-controller="Employee" asp-action="AddEmployee" asp-route-id="@employee.EmployeeCode" class="btn btn-success">Edit</a> *@
+                        <button class="btn btn-sm btn-danger delete-btn" data-id="@employee.EmployeeCode">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section Scripts {
+    @*  @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    } *@
+<link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Initialize DataTables
+            $('#employeeTable').DataTable({
+                paging: true,         // Enable pagination
+                searching: true,      // Enable search
+                ordering: true,       // Enable column sorting
+                responsive: true,     // Make it responsive
+                columnDefs: [
+                    { orderable: false, targets: -1 } // Disable ordering for the last column (Actions)
+                ]
+            });
+
+
+            $('#employeeTable').on('click', '.delete-btn', function () {
+                const employeeCode = $(this).data('id');
+                debugger;
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'You won\'t be able to revert this!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `/Employee/DeleteEmployee`,
+                            type: "POST",
+                            data: { employeeCode: employeeCode },
+                            success: function () {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: 'Employee has been deleted successfully.',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error:", xhr.responseText || error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: 'Error deleting employee. Please try again.',
+                                    showConfirmButton: true
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Edit button click
+            $('#employeeTable').on('click', '.edit-btn', function () {
+                const employeeCode = $(this).data('id');
+                window.location.href = `/Employee/UpdateEmployee?employeeCode=${employeeCode}`;
+            });
+
+        });
+    </script>
+}

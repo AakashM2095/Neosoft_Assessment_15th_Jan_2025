@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Neosoft_Assignment_15_02_2025.DAL;
+using Neosoft_Assignment_15_02_2025.Interface;
 using Neosoft_Assignment_15_02_2025.Models;
 using Neosoft_Assignment_15_02_2025.ViewModel;
 
@@ -7,18 +7,23 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
 {
     public class EmployeeController : Controller
     {
-        private readonly Employee_DAL _employee_DAL;
+        private readonly IEmployeeRepository _employee_DAL;
         private IWebHostEnvironment _webHostEnvironment;
-        public EmployeeController(Employee_DAL employee_DAL, IWebHostEnvironment webHostEnvironment)
+        public EmployeeController(IEmployeeRepository employee_DAL, IWebHostEnvironment webHostEnvironment)
         {
             _employee_DAL = employee_DAL;
             _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var employees = _employee_DAL.GetAllEmployees();
+            var employees = await _employee_DAL.GetAllEmployees();
+            var countries = (await _employee_DAL.GetCountriesAsync()).ToDictionary(c => c.Row_Id, c => c.CountryName);
+            var states = (await _employee_DAL.GetAllStatesAsync()).ToDictionary(s => s.Row_Id, s => s.StateName);
+            var cities = (await _employee_DAL.GetAllCitiesAsync()).ToDictionary(c => c.Row_Id, c => c.CityName);
+
+
             var viewModels = employees.Select(e => new EmployeeViewModel
             {
                 EmployeeCode = e.EmployeeCode,
@@ -27,6 +32,9 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
                 CountryId = e.CountryId,
                 StateId = e.StateId,
                 CityId = e.CityId,
+                CountryName = countries.ContainsKey(e.CountryId) ? countries[e.CountryId] : null,
+                StateName = states.ContainsKey(e.StateId) ? states[e.StateId] : null,
+                CityName = cities.ContainsKey(e.CityId) ? cities[e.CityId] : null,
                 EmailAddress = e.EmailAddress,
                 MobileNumber = e.MobileNumber,
                 PanNumber = e.PanNumber,
@@ -41,17 +49,18 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
             return View(viewModels);
         }
 
-
-
         [HttpGet]
-        public IActionResult AddEmployee()
+        public async Task<IActionResult> AddEmployee()
         {
+            ViewBag.Countries = await _employee_DAL.GetCountriesAsync();
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> AddEmployee(EmployeeViewModel model)
         {
+            model.IsActive = model.IsActiveBool ? (byte)1 : (byte)0;
+
             if (ModelState.IsValid)
             {
                 string uniqueFileName = null;
@@ -87,10 +96,36 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
 
             return View(model);
         }
+        [HttpGet]
+        public async Task<IActionResult> UpdateEmployee(string employeeCode) 
+        {
+            ViewBag.Countries = await _employee_DAL.GetCountriesAsync();
+            EmployeeMaster employee = await _employee_DAL.GetEmployeeByCodeAsync(employeeCode);
+            EmployeeViewModel viewModel = new EmployeeViewModel();
+            viewModel.EmployeeCode = employee.EmployeeCode;
+            viewModel.FirstName = employee.FirstName;
+            viewModel.LastName = employee.LastName;
+            viewModel.CountryId = employee.CountryId;
+            viewModel.StateId = employee.StateId;
+            viewModel.CityId = employee.CityId;
+            viewModel.EmailAddress = employee.EmailAddress;
+            viewModel.MobileNumber = employee.MobileNumber;
+            viewModel.PanNumber = employee.PanNumber;
+            viewModel.PassportNumber = employee.PassportNumber;
+            viewModel.ExistingPhotoPath = employee.ProfileImage;
+            viewModel.Gender = employee.Gender;
+            viewModel.IsActive = employee.IsActive;
+            viewModel.DateOfBirth = employee.DateOfBirth;
+            viewModel.DateOfJoinee  = employee.DateOfJoinee;
+
+            return View(viewModel);
+        }
+                 
 
         [HttpPost]
         public IActionResult UpdateEmployee(EmployeeViewModel viewModel)
         {
+            viewModel.IsActive = viewModel.IsActiveBool ? (byte)1 : (byte)0;
             if (ModelState.IsValid)
             {
                 EmployeeMaster employee = _employee_DAL.GetEmployeeByCode(viewModel.EmployeeCode);
@@ -149,30 +184,16 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult GetEmployee(string employeeCode)
-        {
-            var employee = _employee_DAL.GetEmployeeByCode(employeeCode);
-            var viewModel = new EmployeeViewModel
-            {
-                EmployeeCode = employee.EmployeeCode,
-                FirstName = employee.FirstName,
-                LastName = employee.LastName,
-                CountryId = employee.CountryId,
-                StateId = employee.StateId,
-                CityId = employee.CityId,
-                EmailAddress = employee.EmailAddress,
-                MobileNumber = employee.MobileNumber,
-                PanNumber = employee.PanNumber,
-                PassportNumber = employee.PassportNumber,
-                ExistingPhotoPath = employee.ProfileImage,
-                Gender = employee.Gender,
-                IsActive = employee.IsActive,
-                DateOfBirth = employee.DateOfBirth,
-                DateOfJoinee = employee.DateOfJoinee
-            };
 
-            return View(viewModel);
-        }
+        [HttpGet]
+        public async Task<IActionResult> GetCountries() => Json(await _employee_DAL.GetCountriesAsync());
+        [HttpGet]
+        public async Task<IActionResult> GetStates(int countryId) => Json(await _employee_DAL.GetStatesAsync(countryId));
+        [HttpGet]
+        public async Task<IActionResult> GetCities(int stateId) => Json(await _employee_DAL.GetCitiesAsync(stateId));
+        [HttpGet]
+        public async Task<IActionResult> GetEmployee(string employeeCode) => Json(await _employee_DAL.GetEmployeeByCodeAsync(employeeCode));
+
 
     }
 }
