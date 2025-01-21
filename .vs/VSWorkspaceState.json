@@ -1,7 +1,12 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Controllers",
+    "\\DAL",
+    "\\ViewModel",
+    "\\Views",
+    "\\Views\\Employee"
   ],
-  "SelectedNode": "\\Neosoft_Assignment_15_02_2025.sln",
+  "SelectedNode": "\\Views\\Employee\\AddEmployee.cshtml",
   "PreviewInSolutionExplorer": false
 }

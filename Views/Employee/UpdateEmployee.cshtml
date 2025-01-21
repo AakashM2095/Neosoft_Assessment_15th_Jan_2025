@@ -3,14 +3,119 @@
     var photoPath = "~/Images/" + (Model.ExistingPhotoPath ?? "Employee.png");
 
 }
-<h4>EmployeeViewModel</h4>
+
+<head>
+    <style>
+        form {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Form Group Styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* Labels */
+        label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Input Fields */
+        input.form-control, select.form-control {
+            height: 40px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+            /* Input Focus */
+            input.form-control:focus, select.form-control:focus {
+                border-color: #007bff;
+                box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+            }
+
+        /* Validation Errors */
+        .text-danger {
+            font-size: 13px;
+            color: #d9534f;
+        }
+
+        /* Buttons */
+        .btn {
+            font-size: 16px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+        }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+                border-color: #0056b3;
+                color: #fff;
+            }
+
+        /* Checkbox and Radio */
+        .form-check-input {
+            margin-right: 10px;
+        }
+
+        .form-check-label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* Section Titles */
+        h4 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        /* Dropdown Styling */
+        select.form-control {
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%27http%3A//www.w3.org/2000/svg%27 viewBox%3D%270 0 4 5%27%3E%3Cpath fill%3D%27%23007bff%27 d%3D%27M2 0L0 2h4z%27/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px;
+        }
+
+        /* Date Inputs */
+        input.datepicker, input.date {
+            position: relative;
+            padding-right: 30px;
+        }
+
+    </style>
+</head>
+
+<h4>Edit Employee</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-8">
         <form asp-action="UpdateEmployee" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="EmployeeCode" />
             <input type="hidden" asp-for="ExistingPhotoPath" />
+            <input type="hidden" id="hiddenStateId" value="@Model.StateId" />
+            <input type="hidden" id="hiddenCityId" value="@Model.CityId" />
 
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
@@ -77,15 +182,21 @@
                 <input asp-for="DateOfJoinee" class="form-control date" />
                 <span asp-validation-for="DateOfJoinee" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Image" class="control-label"></label>
                 <input asp-for="Image" type="file" class="form-control" />
                 <span asp-validation-for="Image" class="text-danger"></span>
             </div>
-            @* <div class="form-group">
-            <label asp-for="IsActive" class="control-label">Is Active</label>
-            <input asp-for="IsActive" type="checkbox" class="form-check-input" />
-            </div> *@
+            <div class="form-group">
+                <label>
+                    @if (!string.IsNullOrEmpty(Model.ExistingPhotoPath))
+                    {
+                        <p>Current File: @System.IO.Path.GetFileName(Model.ExistingPhotoPath)</p>
+                        <img src="@Url.Content(Model.ExistingPhotoPath)" alt="Existing Image" style="max-width: 150px; max-height: 150px;" />
+                    }
+                </label>
+            </div>
             <div class="form-group">
                 <label asp-for="IsActiveBool" class="control-label">Is Active</label>
                 <input asp-for="IsActiveBool" type="checkbox" class="form-check-input" />
@@ -114,13 +225,78 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
         $(document).ready(function () {
             // Initialize datepicker
             //$('.datepicker').datepicker({ format: 'mm/dd/yyyy' });
 
             // Load states on country change
+            const hiddenStateId = $('#hiddenStateId').val();
+            const hiddenCityId = $('#hiddenCityId').val();
+
+            // Get initial country ID from the model
+            // Get initial country ID from the model
+            var initialCountryId = $('#CountryDropDown').val();
+
+            // Load states for the initial country (if any)
+            if (initialCountryId) {
+                $.ajax({
+                    url: '/Employee/GetStates',
+                    type: 'GET',
+                    data: { countryId: initialCountryId },
+                    success: function (data) {
+                        if (data.length > 0) {
+                            const $stateDropdown = $('#stateDropdown');
+                            $.each(data, function (index, state) {
+                                $stateDropdown.append($('<option>', {
+                                    value: state.row_Id,
+                                    text: state.stateName
+                                }));
+                            });
+
+                            // Get initial state ID from the model
+                            var initialStateId = $('#hiddenStateId').val();
+
+                            // Load cities for the initial state (if any)
+                            if (initialStateId) {
+                                $.ajax({
+                                    url: '/Employee/GetCities',
+                                    type: 'GET',
+                                    data: { stateId: initialStateId },
+                                    success: function (data) {
+                                        if (data.length > 0) {
+                                            const $cityDropdown = $('#cityDropdown');
+                                            $.each(data, function (index, city) {
+                                                $cityDropdown.append($('<option>', {
+                                                    value: city.row_Id,
+                                                    text: city.cityName
+                                                }));
+                                            });
+
+                                            $('#stateDropdown').val(hiddenStateId);
+                                            $('#cityDropdown').val(hiddenCityId);
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error('Error fetching cities:', status, error);
+                                        alert('Error loading cities.');
+                                    }
+                                });
+                            }
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching states:', status, error);
+                        alert('Error loading states.');
+                    }
+                });
+            }
+
+
+            // <!----------Previous code -------------------->
             $('#CountryDropDown').change(function () {
                 const countryId = parseInt($(this).val());
                 debugger;

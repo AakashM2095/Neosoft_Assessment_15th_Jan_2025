@@ -1,4 +1,5 @@
-﻿using Neosoft_Assignment_15_02_2025.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Neosoft_Assignment_15_02_2025.Models;
 
 namespace Neosoft_Assignment_15_02_2025.Interface
 {
@@ -15,5 +16,10 @@ namespace Neosoft_Assignment_15_02_2025.Interface
         public Task<EmployeeMaster> GetEmployeeByCodeAsync(string employeeCode);
         public Task<List<City>> GetAllCitiesAsync();
         public Task<List<State>> GetAllStatesAsync();
+        public Task<bool> IsEmailUnique(string email);
+        public Task<bool> IsMobileUnique(string mobile);
+        public Task<bool> IsPanUnique(string pan);
+        public Task<bool> IsPassportUnique(string passport);  
+
     }
 }

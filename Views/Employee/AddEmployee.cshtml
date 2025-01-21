@@ -4,13 +4,115 @@
     ViewData["Title"] = "Add Employee";
 }
 
+<head>
+    <style>
+        /* General Form Styling */
+        form {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Form Group Styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* Labels */
+        label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Input Fields */
+        input.form-control, select.form-control {
+            height: 40px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+            /* Input Focus */
+            input.form-control:focus, select.form-control:focus {
+                border-color: #007bff;
+                box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+            }
+
+        /* Validation Errors */
+        .text-danger {
+            font-size: 13px;
+            color: #d9534f;
+        }
+
+        /* Buttons */
+        .btn {
+            font-size: 16px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+        }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+                border-color: #0056b3;
+                color: #fff;
+            }
+
+        /* Checkbox and Radio */
+        .form-check-input {
+            margin-right: 10px;
+        }
+
+        .form-check-label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* Section Titles */
+        h4 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        /* Dropdown Styling */
+        select.form-control {
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%27http%3A//www.w3.org/2000/svg%27 viewBox%3D%270 0 4 5%27%3E%3Cpath fill%3D%27%23007bff%27 d%3D%27M2 0L0 2h4z%27/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px;
+        }
+
+        /* Date Inputs */
+        input.datepicker, input.date {
+            position: relative;
+            padding-right: 30px;
+        }
+
+    </style>
+</head>
+
 <h4>Add Employee</h4>
 <hr />
 <div class="row">
     <div class="col-md-8">
         <form asp-action="AddEmployee" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control" />
@@ -50,21 +152,39 @@
                 <label asp-for="PanNumber" class="control-label"></label>
                 <input asp-for="PanNumber" class="form-control" />
                 <span asp-validation-for="PanNumber" class="text-danger"></span>
+                @if (ViewBag.pancard != null)
+                {
+                    <span class="text-danger">@ViewBag.pancard</span>
+                }
             </div>
             <div class="form-group">
                 <label asp-for="PassportNumber" class="control-label"></label>
                 <input asp-for="PassportNumber" class="form-control" />
                 <span asp-validation-for="PassportNumber" class="text-danger"></span>
+                @if (ViewBag.passport != null)
+                {
+                    <span class="text-danger">@ViewBag.passport</span>
+                }
             </div>
             <div class="form-group">
                 <label asp-for="MobileNumber" class="control-label"></label>
                 <input asp-for="MobileNumber" class="form-control" />
                 <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                @if (ViewBag.moblie != null)
+                {
+                    <span class="text-danger">@ViewBag.moblie</span>
+                }
+
             </div>
             <div class="form-group">
                 <label asp-for="EmailAddress" class="control-label"></label>
-                <input asp-for="EmailAddress" class="form-control" />
+                <input asp-for="EmailAddress" class="form-control" id="EmailAddress" />
                 <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                @* <span id="emailError" class="text-danger"></span> *@
+                @if (ViewBag.email != null)
+                {
+                    <span class="text-danger">@ViewBag.email</span>
+                }
             </div>
             <div class="form-group">
                 <label asp-for="DateOfBirth" class="control-label"></label>
@@ -81,10 +201,6 @@
                 <input asp-for="Image" type="file" class="form-control" />
                 <span asp-validation-for="Image" class="text-danger"></span>
             </div>
-            @* <div class="form-group">
-            <label asp-for="IsActive" class="control-label">Is Active</label>
-            <input asp-for="IsActive" type="checkbox" class="form-check-input" />
-            </div> *@
             <div class="form-group">
                 <label asp-for="IsActiveBool" class="control-label">Is Active</label>
                 <input asp-for="IsActiveBool" type="checkbox" class="form-check-input" />
@@ -106,6 +222,9 @@
             </div>
         </form>
     </div>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
@@ -184,5 +303,33 @@
                 }
             });
         });
+
+        // $('#EmailAddress').blur(function () {
+        //     const email = $(this).val();
+        //     debugger;
+        //     if (email) {
+        //         // Make AJAX call to check email uniqueness
+        //         $.ajax({
+        //             url: '/Employee/IsUniqueEmail', // Controller endpoint
+        //             type: 'POST',
+        //             contentType: 'application/json',
+        //             data:  email ,
+        //             success: function (isUnique) {
+        //                 if (isUnique) {
+        //                     // Clear any previous error message
+        //                     $('#emailError').text('');
+        //                 } else {
+        //                     // Show error message
+        //                     $('#emailError').text('This email address is already in use.');
+        //                 }
+        //             },
+        //             error: function (xhr, status, error) {
+        //                 console.error('Error checking email uniqueness:', status, error);
+        //                 alert('An error occurred while validating the email. Please try again.');
+        //             }
+        //         });
+        //     }
+        // });
+
     </script>
 }

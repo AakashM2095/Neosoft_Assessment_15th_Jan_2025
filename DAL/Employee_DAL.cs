@@ -1,4 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Neosoft_Assignment_15_02_2025.Interface;
 using Neosoft_Assignment_15_02_2025.Models;
 using System.Data;
@@ -16,6 +18,8 @@ namespace Neosoft_Assignment_15_02_2025.DAL
 
         public async Task<int> InsertEmployee(EmployeeMaster employee)
         {
+            
+            
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -429,6 +433,95 @@ namespace Neosoft_Assignment_15_02_2025.DAL
 
             return cities;
         }
+
+        public async Task<bool> IsEmailUnique(string email)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    SqlCommand command = new SqlCommand("stp_Emp_CheckDuplicateEmail", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@EmailAddress", email);
+
+                    await connection.OpenAsync();
+                    object result = await command.ExecuteScalarAsync();
+
+                    return Convert.ToInt32(result) == 1 ? true : false;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while checking for unique email.", ex);
+            }
+        }
+
+        public async Task<bool> IsMobileUnique(string mobile)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    SqlCommand command = new SqlCommand("stp_Emp_CheckDuplicateMobileNumber", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@MobileNumber", mobile);
+
+                    await connection.OpenAsync();
+                    object result = await command.ExecuteScalarAsync();
+                    return Convert.ToInt32(result) == 1 ? true : false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while checking for unique email.", ex);
+            }
+        }
+
+        public async Task<bool> IsPanUnique(string pan)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    SqlCommand command = new SqlCommand("stp_Emp_CheckDuplicatePanNumber", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@PanNumber", pan);
+
+                    await connection.OpenAsync();
+                    object result = await command.ExecuteScalarAsync();
+
+                    return Convert.ToInt32(result) == 1 ? true : false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while checking for unique email.", ex);
+            }
+        }
+
+        public async Task<bool> IsPassportUnique(string passport)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    SqlCommand command = new SqlCommand("stp_Emp_CheckDuplicatePassportNumber", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@PassportNumber", passport);
+
+                    await connection.OpenAsync();
+                    object result = await command.ExecuteScalarAsync();
+
+                    return Convert.ToInt32(result) == 1 ? true : false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while checking for unique email.", ex);
+            }
+        }
+
     }
 }
 

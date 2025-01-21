@@ -59,42 +59,59 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
         [HttpPost]
         public async Task<IActionResult> AddEmployee(EmployeeViewModel model)
         {
+            
             model.IsActive = model.IsActiveBool ? (byte)1 : (byte)0;
-
-            if (ModelState.IsValid)
+            bool email = await _employee_DAL.IsEmailUnique(model.EmailAddress);
+            bool moblie = await _employee_DAL.IsMobileUnique(model.MobileNumber);
+            bool pancard = await _employee_DAL.IsPanUnique(model.PanNumber);
+            bool passport = await _employee_DAL.IsPassportUnique(model.PassportNumber);
+            ViewBag.email = email? "Email already Exists":null;
+            ViewBag.moblie = moblie ?  "Moblie Number already Exists":null;
+            ViewBag.pancard = pancard ?  "Pancard already Exists":null;
+            ViewBag.passport = passport ?  "Passport already Exists":null;
+            if (!email && !moblie && !pancard && !passport)
             {
-                string uniqueFileName = null;
-                if (model.Image != null)
+                if (ModelState.IsValid)
                 {
-                    uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Image.FileName;
-                    string uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
-                    string uniqueFilePath = Path.Combine(uploadFolder, uniqueFileName);
-                    model.Image.CopyTo(new FileStream(uniqueFilePath, FileMode.Create));
+
+                    string uniqueFileName = null;
+                    if (model.Image != null)
+                    {
+                        uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Image.FileName;
+                        string uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+                        string uniqueFilePath = Path.Combine(uploadFolder, uniqueFileName);
+                        model.Image.CopyTo(new FileStream(uniqueFilePath, FileMode.Create));
+                    }
+
+                    EmployeeMaster employee = new EmployeeMaster
+                    {
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        CountryId = model.CountryId,
+                        StateId = model.StateId,
+                        CityId = model.CityId,
+                        EmailAddress = model.EmailAddress,
+                        MobileNumber = model.MobileNumber,
+                        PanNumber = model.PanNumber,
+                        PassportNumber = model.PassportNumber,
+                        ProfileImage = uniqueFileName,
+                        Gender = model.Gender,
+                        IsActive = model.IsActive,
+                        DateOfBirth = model.DateOfBirth,
+                        DateOfJoinee = model.DateOfJoinee
+                    };
+
+                    await _employee_DAL.InsertEmployee(employee);
+                    return RedirectToAction("Index");
                 }
 
-                EmployeeMaster employee = new EmployeeMaster
-                {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    CountryId = model.CountryId,
-                    StateId = model.StateId,
-                    CityId = model.CityId,
-                    EmailAddress = model.EmailAddress,
-                    MobileNumber = model.MobileNumber,
-                    PanNumber = model.PanNumber,
-                    PassportNumber = model.PassportNumber,
-                    ProfileImage = uniqueFileName,
-                    Gender = model.Gender,
-                    IsActive = model.IsActive,
-                    DateOfBirth = model.DateOfBirth,
-                    DateOfJoinee = model.DateOfJoinee
-                };
-
-                await _employee_DAL.InsertEmployee(employee);
                 return RedirectToAction("Index");
             }
-
-            return View(model);
+            else
+            {
+                ViewBag.Countries = await _employee_DAL.GetCountriesAsync();
+                return View(model);
+            }
         }
         [HttpGet]
         public async Task<IActionResult> UpdateEmployee(string employeeCode) 
@@ -117,6 +134,7 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
             viewModel.IsActive = employee.IsActive;
             viewModel.DateOfBirth = employee.DateOfBirth;
             viewModel.DateOfJoinee  = employee.DateOfJoinee;
+            viewModel.IsActiveBool = employee.IsActive == 1 ? true : false;
 
             return View(viewModel);
         }
@@ -193,6 +211,39 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
         public async Task<IActionResult> GetCities(int stateId) => Json(await _employee_DAL.GetCitiesAsync(stateId));
         [HttpGet]
         public async Task<IActionResult> GetEmployee(string employeeCode) => Json(await _employee_DAL.GetEmployeeByCodeAsync(employeeCode));
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllStates(int countryId) => Json(await _employee_DAL.GetAllStatesAsync());
+        [HttpGet]
+        public async Task<IActionResult> GetAllCities(int stateId) => Json(await _employee_DAL.GetAllCitiesAsync());
+
+        [HttpPost]
+        public JsonResult IsUniqueEmail(string emailAddress)
+        {
+            var isUnique = _employee_DAL.IsEmailUnique(emailAddress); 
+            return Json(isUnique);
+        }
+
+        [HttpPost]
+        public JsonResult IsUniqueMobile(string mobileNumber)
+        {
+            var isUnique = _employee_DAL.IsMobileUnique(mobileNumber);
+            return Json(isUnique);
+        }
+
+        [HttpPost]
+        public JsonResult IsUniquePan(string panNumber)
+        {
+            var isUnique = _employee_DAL.IsPanUnique(panNumber);
+            return Json(isUnique);
+        }
+
+        [HttpPost]
+        public JsonResult IsUniquePassport(string passportNumber)
+        {
+            var isUnique = _employee_DAL.IsPassportUnique(passportNumber);
+            return Json(isUnique);
+        }
 
 
     }

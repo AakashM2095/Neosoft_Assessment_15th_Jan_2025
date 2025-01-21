@@ -1,18 +1,18 @@
 ﻿@model IEnumerable<Neosoft_Assignment_15_02_2025.ViewModel.EmployeeViewModel>
 
 @{
-    ViewData["Title"] = "Employee Listing";
+    ViewData["Title"] = "List of Employees";
 }
 <head>
 <style>
         .div.dataTables_wrapper div.dataTables_length select {
-            width : 100px;
+            width : 120px;
         }
 </style>
 </head>
 
 <div class="my-3">
-    <h2>Employee Listing</h2>
+    <h2>List of Employees</h2>
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4>Employee Records</h4>
         <a asp-controller="Employee" asp-action="AddEmployee" class="btn btn-success">Add Employee</a>
@@ -37,7 +37,7 @@
             {
                 var photoPath = "~/Images/" + (employee.ExistingPhotoPath ?? "Employee.png");
                 <tr>
-                    <td>@employee.EmailAddress @employee.EmployeeCode</td>
+                    <td>@employee.EmailAddress</td>
                     <td>@employee.CountryName</td>
                     <td>@employee.StateName</td>
                     <td>@employee.CityName</td>
@@ -50,7 +50,6 @@
                     </td>
                     <td>
                         <button class="btn btn-sm btn-primary edit-btn" data-id="@employee.EmployeeCode">Edit</button>
-                       @*  <a asp-controller="Employee" asp-action="AddEmployee" asp-route-id="@employee.EmployeeCode" class="btn btn-success">Edit</a> *@
                         <button class="btn btn-sm btn-danger delete-btn" data-id="@employee.EmployeeCode">Delete</button>
                     </td>
                 </tr>
