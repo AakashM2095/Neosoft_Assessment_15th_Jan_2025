@@ -7,6 +7,6 @@
     "\\Views",
     "\\Views\\Employee"
   ],
-  "SelectedNode": "\\Views\\Employee\\AddEmployee.cshtml",
+  "SelectedNode": "\\Controllers\\EmployeeController.cs",
   "PreviewInSolutionExplorer": false
 }

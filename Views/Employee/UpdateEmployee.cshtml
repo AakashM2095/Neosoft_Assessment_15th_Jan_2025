@@ -1,4 +1,4 @@
-﻿@model Neosoft_Assignment_15_02_2025.ViewModel.EmployeeViewModel
+﻿@model Neosoft_Assignment_15_02_2025.ViewModel.EmployeeUpdateViewModel
 @{
     var photoPath = "~/Images/" + (Model.ExistingPhotoPath ?? "Employee.png");
 
@@ -156,21 +156,37 @@
                 <label asp-for="PanNumber" class="control-label"></label>
                 <input asp-for="PanNumber" class="form-control" />
                 <span asp-validation-for="PanNumber" class="text-danger"></span>
+                @if (ViewBag.pancard != null)
+                {
+                    <span class="text-danger">@ViewBag.pancard</span>
+                }
             </div>
             <div class="form-group">
                 <label asp-for="PassportNumber" class="control-label"></label>
                 <input asp-for="PassportNumber" class="form-control" />
                 <span asp-validation-for="PassportNumber" class="text-danger"></span>
+                @if (ViewBag.passport != null)
+                {
+                    <span class="text-danger">@ViewBag.passport</span>
+                }
             </div>
             <div class="form-group">
                 <label asp-for="MobileNumber" class="control-label"></label>
                 <input asp-for="MobileNumber" class="form-control" />
                 <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                @if (ViewBag.moblie != null)
+                {
+                    <span class="text-danger">@ViewBag.moblie</span>
+                }
             </div>
             <div class="form-group">
                 <label asp-for="EmailAddress" class="control-label"></label>
-                <input asp-for="EmailAddress" class="form-control" />
+                <input asp-for="EmailAddress" class="form-control" id="EmailAddress  />
                 <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                @if (ViewBag.email != null)
+                {
+                    <span class="text-danger">@ViewBag.email</span>
+                }
             </div>
             <div class="form-group">
                 <label asp-for="DateOfBirth" class="control-label"></label>
@@ -362,6 +378,34 @@
                     });
                 }
             });
+        });
+
+        $('#EmailAddress').blur(function () {
+            const email = $(this).val();
+            debugger;
+            if (email) {
+                // Make AJAX call to check email uniqueness
+                $.ajax({
+                    url: '/Employee/IsUniqueEmail', // Controller endpoint
+                    type: 'POST',
+                    contentType: 'application/json',
+                 //   data:  email ,
+                    data:  JSON.stringify({ email: email }),
+                    success: function (isUnique) {
+                        if (isUnique) {
+                            // Clear any previous error message
+                            $('#emailError').text('');
+                        } else {
+                            // Show error message
+                            $('#emailError').text('This email address is already in use.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error checking email uniqueness:', status, error);
+                        alert('An error occurred while validating the email. Please try again.');
+                    }
+                });
+            }
         });
     </script>
 }

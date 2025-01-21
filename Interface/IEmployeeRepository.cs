@@ -16,10 +16,10 @@ namespace Neosoft_Assignment_15_02_2025.Interface
         public Task<EmployeeMaster> GetEmployeeByCodeAsync(string employeeCode);
         public Task<List<City>> GetAllCitiesAsync();
         public Task<List<State>> GetAllStatesAsync();
-        public Task<bool> IsEmailUnique(string email);
-        public Task<bool> IsMobileUnique(string mobile);
-        public Task<bool> IsPanUnique(string pan);
-        public Task<bool> IsPassportUnique(string passport);  
+        public Task<bool> IsEmailUnique(string email,string? employeeCode);
+        public Task<bool> IsMobileUnique(string mobile, string? employeeCode);
+        public Task<bool> IsPanUnique(string pan, string? employeeCode);
+        public Task<bool> IsPassportUnique(string passport, string? employeeCode);  
 
     }
 }

@@ -434,7 +434,7 @@ namespace Neosoft_Assignment_15_02_2025.DAL
             return cities;
         }
 
-        public async Task<bool> IsEmailUnique(string email)
+        public async Task<bool> IsEmailUnique(string email,string? employeeCode)
         {
             try
             {
@@ -443,6 +443,14 @@ namespace Neosoft_Assignment_15_02_2025.DAL
                     SqlCommand command = new SqlCommand("stp_Emp_CheckDuplicateEmail", connection);
                     command.CommandType = CommandType.StoredProcedure;
                     command.Parameters.AddWithValue("@EmailAddress", email);
+                    if (employeeCode == null)
+                    {
+                        command.Parameters.AddWithValue("@EmployeeCode", DBNull.Value);
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                    }
 
                     await connection.OpenAsync();
                     object result = await command.ExecuteScalarAsync();
@@ -457,7 +465,7 @@ namespace Neosoft_Assignment_15_02_2025.DAL
             }
         }
 
-        public async Task<bool> IsMobileUnique(string mobile)
+        public async Task<bool> IsMobileUnique(string mobile, string? employeeCode)
         {
             try
             {
@@ -466,6 +474,14 @@ namespace Neosoft_Assignment_15_02_2025.DAL
                     SqlCommand command = new SqlCommand("stp_Emp_CheckDuplicateMobileNumber", connection);
                     command.CommandType = CommandType.StoredProcedure;
                     command.Parameters.AddWithValue("@MobileNumber", mobile);
+                    if (employeeCode == null)
+                    {
+                        command.Parameters.AddWithValue("@EmployeeCode", DBNull.Value);
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                    }
 
                     await connection.OpenAsync();
                     object result = await command.ExecuteScalarAsync();
@@ -478,7 +494,7 @@ namespace Neosoft_Assignment_15_02_2025.DAL
             }
         }
 
-        public async Task<bool> IsPanUnique(string pan)
+        public async Task<bool> IsPanUnique(string pan, string? employeeCode)
         {
             try
             {
@@ -487,6 +503,14 @@ namespace Neosoft_Assignment_15_02_2025.DAL
                     SqlCommand command = new SqlCommand("stp_Emp_CheckDuplicatePanNumber", connection);
                     command.CommandType = CommandType.StoredProcedure;
                     command.Parameters.AddWithValue("@PanNumber", pan);
+                    if (employeeCode == null)
+                    {
+                        command.Parameters.AddWithValue("@EmployeeCode", DBNull.Value);
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                    }
 
                     await connection.OpenAsync();
                     object result = await command.ExecuteScalarAsync();
@@ -500,7 +524,7 @@ namespace Neosoft_Assignment_15_02_2025.DAL
             }
         }
 
-        public async Task<bool> IsPassportUnique(string passport)
+        public async Task<bool> IsPassportUnique(string passport, string? employeeCode)
         {
             try
             {
@@ -509,6 +533,14 @@ namespace Neosoft_Assignment_15_02_2025.DAL
                     SqlCommand command = new SqlCommand("stp_Emp_CheckDuplicatePassportNumber", connection);
                     command.CommandType = CommandType.StoredProcedure;
                     command.Parameters.AddWithValue("@PassportNumber", passport);
+                    if (employeeCode == null)
+                    {
+                        command.Parameters.AddWithValue("@EmployeeCode", DBNull.Value);
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                    }
 
                     await connection.OpenAsync();
                     object result = await command.ExecuteScalarAsync();

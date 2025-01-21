@@ -2,7 +2,7 @@
 
 namespace Neosoft_Assignment_15_02_2025.ViewModel
 {
-    public class EmployeeViewModel
+    public class EmployeeUpdateViewModel
     {
         public string? EmployeeCode { get; set; }
 
@@ -17,10 +17,10 @@ namespace Neosoft_Assignment_15_02_2025.ViewModel
         [Required(ErrorMessage = "Country is required.")]
         public int CountryId { get; set; }
 
-       [Required(ErrorMessage = "State is required.")]
+        [Required(ErrorMessage = "State is required.")]
         public int StateId { get; set; }
 
-       [Required(ErrorMessage = "City is required.")]
+        [Required(ErrorMessage = "City is required.")]
         public int CityId { get; set; }
 
         [Required(ErrorMessage = "Email Address is required.")]
@@ -41,15 +41,15 @@ namespace Neosoft_Assignment_15_02_2025.ViewModel
         [RegularExpression("^[A-Z0-9]+$", ErrorMessage = "Invalid Passport Number format.")]
         public string? PassportNumber { get; set; }
 
-       [Required(ErrorMessage = "Profile Picture is required.")]
-       // [FileExtensions(Extensions = "jpg,png", ErrorMessage = "Profile picture must be in JPG or PNG format.")]
-       // [MaxFileSize(200 * 1024, ErrorMessage = "Profile picture size must be less than 200 KB.")]
+        // [Required(ErrorMessage = "Profile Picture is required.")]
+        // [FileExtensions(Extensions = "jpg,png", ErrorMessage = "Profile picture must be in JPG or PNG format.")]
+        // [MaxFileSize(200 * 1024, ErrorMessage = "Profile picture size must be less than 200 KB.")]
         public IFormFile? Image { get; set; }
 
         [Required(ErrorMessage = "Gender is required.")]
         public byte? Gender { get; set; }
 
-       // [Required(ErrorMessage = "Status is required.")]
+        // [Required(ErrorMessage = "Status is required.")]
         public byte? IsActive { get; set; }
 
         [Required(ErrorMessage = "Date of Birth is required.")]
@@ -67,39 +67,4 @@ namespace Neosoft_Assignment_15_02_2025.ViewModel
         public string? StateName { get; set; }
         public string? CityName { get; set; }
     }
-
-    // Custom validation for file size
-    public class MaxFileSizeAttribute : ValidationAttribute
-    {
-        private readonly int _maxSizeInBytes;
-
-        public MaxFileSizeAttribute(int maxSizeInBytes)
-        {
-            _maxSizeInBytes = maxSizeInBytes;
-        }
-
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-        {
-            var file = value as IFormFile;
-            if (file != null && file.Length > _maxSizeInBytes)
-            {
-                return new ValidationResult(ErrorMessage);
-            }
-            return ValidationResult.Success;
-        }
-    }
-
-    // Custom validation to check if a date is less than today
-    public class LessThanTodayAttribute : ValidationAttribute
-    {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-        {
-            if (value is DateTime date && date >= DateTime.Today)
-            {
-                return new ValidationResult(ErrorMessage);
-            }
-            return ValidationResult.Success;
-        }
-    }
-
 }

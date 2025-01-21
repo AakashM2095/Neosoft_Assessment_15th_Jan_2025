@@ -313,7 +313,8 @@
         //             url: '/Employee/IsUniqueEmail', // Controller endpoint
         //             type: 'POST',
         //             contentType: 'application/json',
-        //             data:  email ,
+        //          //   data:  email ,
+        //             data:  JSON.stringify({ email: email }),
         //             success: function (isUnique) {
         //                 if (isUnique) {
         //                     // Clear any previous error message
