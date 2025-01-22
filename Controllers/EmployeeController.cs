@@ -141,61 +141,99 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
             return View(viewModel);
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> UpdateEmployee(EmployeeUpdateViewModel viewModel)
+        //{
+        //    viewModel.IsActive = viewModel.IsActiveBool ? (byte)1 : (byte)0;
+        //    bool email = await _employee_DAL.IsEmailUnique(viewModel.EmailAddress, viewModel.EmployeeCode);
+        //    bool moblie = await _employee_DAL.IsMobileUnique(viewModel.MobileNumber, viewModel.EmployeeCode);
+        //    bool pancard = await _employee_DAL.IsPanUnique(viewModel.PanNumber, viewModel.EmployeeCode);
+        //    bool passport = await _employee_DAL.IsPassportUnique(viewModel.PassportNumber, viewModel.EmployeeCode);
+
+        //    ViewBag.email = email ? "Email already Exists" : null;
+        //    ViewBag.moblie = moblie ? "Moblie Number already Exists" : null;
+        //    ViewBag.pancard = pancard ? "Pancard already Exists" : null;
+        //    ViewBag.passport = passport ? "Passport already Exists" : null;
+
+        //    if (!email && !moblie && !pancard && !passport)
+        //    {
+        //        if (ModelState.IsValid)
+        //        {
+        //            EmployeeMaster employee = _employee_DAL.GetEmployeeByCode(viewModel.EmployeeCode);
+        //            employee.FirstName = viewModel.FirstName;
+        //            employee.LastName = viewModel.LastName;
+        //            employee.CountryId = viewModel.CountryId;
+        //            employee.StateId = viewModel.StateId;
+        //            employee.CityId = viewModel.CityId;
+        //            employee.EmailAddress = viewModel.EmailAddress;
+        //            employee.MobileNumber = viewModel.MobileNumber;
+        //            employee.PanNumber = viewModel.PanNumber;
+        //            employee.PassportNumber = viewModel.PassportNumber;
+        //            employee.ProfileImage = viewModel.ExistingPhotoPath;
+        //            employee.Gender = viewModel.Gender;
+        //            employee.IsActive = viewModel.IsActive;
+        //            employee.DateOfBirth = viewModel.DateOfBirth;
+        //            employee.DateOfJoinee = viewModel.DateOfJoinee;
+
+        //            if (viewModel.Image != null)
+        //            {
+        //                if (employee.ProfileImage != null)
+        //                {
+        //                    string filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", viewModel.ExistingPhotoPath);
+        //                    System.IO.File.Delete(filePath);
+        //                }
+
+        //                employee.ProfileImage = ProcessUploadedFile(viewModel);
+        //            }
+
+        //            _employee_DAL.UpdateEmployeeByCode(employee);
+        //        }
+        //        return RedirectToAction("Index");
+        //    }
+        //    else
+        //    {
+        //        ViewBag.Countries = await _employee_DAL.GetCountriesAsync();
+        //        return View(viewModel);
+        //    }
+        //}
 
         [HttpPost]
         public async Task<IActionResult> UpdateEmployee(EmployeeUpdateViewModel viewModel)
         {
             viewModel.IsActive = viewModel.IsActiveBool ? (byte)1 : (byte)0;
-            bool email = await _employee_DAL.IsEmailUnique(viewModel.EmailAddress,viewModel.EmployeeCode);
-            bool moblie = await _employee_DAL.IsMobileUnique(viewModel.MobileNumber, viewModel.EmployeeCode);
-            bool pancard = await _employee_DAL.IsPanUnique(viewModel.PanNumber, viewModel.EmployeeCode);
-            bool passport = await _employee_DAL.IsPassportUnique(viewModel.PassportNumber, viewModel.EmployeeCode);
 
-            ViewBag.email = email ? "Email already Exists" : null;
-            ViewBag.moblie = moblie ? "Moblie Number already Exists" : null;
-            ViewBag.pancard = pancard ? "Pancard already Exists" : null;
-            ViewBag.passport = passport ? "Passport already Exists" : null;
-
-            if (!email && !moblie && !pancard && !passport)
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                EmployeeMaster employee = _employee_DAL.GetEmployeeByCode(viewModel.EmployeeCode);
+                employee.FirstName = viewModel.FirstName;
+                employee.LastName = viewModel.LastName;
+                employee.CountryId = viewModel.CountryId;
+                employee.StateId = viewModel.StateId;
+                employee.CityId = viewModel.CityId;
+                employee.EmailAddress = viewModel.EmailAddress;
+                employee.MobileNumber = viewModel.MobileNumber;
+                employee.PanNumber = viewModel.PanNumber;
+                employee.PassportNumber = viewModel.PassportNumber;
+                employee.ProfileImage = viewModel.ExistingPhotoPath;
+                employee.Gender = viewModel.Gender;
+                employee.IsActive = viewModel.IsActive;
+                employee.DateOfBirth = viewModel.DateOfBirth;
+                employee.DateOfJoinee = viewModel.DateOfJoinee;
+
+                if (viewModel.Image != null)
                 {
-                    EmployeeMaster employee = _employee_DAL.GetEmployeeByCode(viewModel.EmployeeCode);
-                    employee.FirstName = viewModel.FirstName;
-                    employee.LastName = viewModel.LastName;
-                    employee.CountryId = viewModel.CountryId;
-                    employee.StateId = viewModel.StateId;
-                    employee.CityId = viewModel.CityId;
-                    employee.EmailAddress = viewModel.EmailAddress;
-                    employee.MobileNumber = viewModel.MobileNumber;
-                    employee.PanNumber = viewModel.PanNumber;
-                    employee.PassportNumber = viewModel.PassportNumber;
-                    employee.ProfileImage = viewModel.ExistingPhotoPath;
-                    employee.Gender = viewModel.Gender;
-                    employee.IsActive = viewModel.IsActive;
-                    employee.DateOfBirth = viewModel.DateOfBirth;
-                    employee.DateOfJoinee = viewModel.DateOfJoinee;
-
-                    if (viewModel.Image != null)
+                    if (employee.ProfileImage != null)
                     {
-                        if (employee.ProfileImage != null)
-                        {
-                            string filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", viewModel.ExistingPhotoPath);
-                            System.IO.File.Delete(filePath);
-                        }
-
-                        employee.ProfileImage = ProcessUploadedFile(viewModel);
+                        string filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", viewModel.ExistingPhotoPath);
+                        System.IO.File.Delete(filePath);
                     }
 
-                    _employee_DAL.UpdateEmployeeByCode(employee);
+                    employee.ProfileImage = ProcessUploadedFile(viewModel);
                 }
-                return RedirectToAction("Index");
+
+                _employee_DAL.UpdateEmployeeByCode(employee);
             }
-            else 
-            {
-                ViewBag.Countries = await _employee_DAL.GetCountriesAsync();
-                return View(viewModel);
-            }
+            return RedirectToAction("Index");
         }
 
         private string ProcessUploadedFile(EmployeeUpdateViewModel model)
@@ -238,33 +276,57 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
         public async Task<IActionResult> GetAllCities(int stateId) => Json(await _employee_DAL.GetAllCitiesAsync());
 
         [HttpPost]
-        public JsonResult IsUniqueEmail(string emailAddress,string? employeeCode)
+        public async Task<JsonResult> IsUniqueEmail(string emailAddress, string? employeeCode)
         {
-            var isUnique = _employee_DAL.IsEmailUnique(emailAddress, employeeCode);
+            var isUnique = await _employee_DAL.IsEmailUnique(emailAddress, employeeCode);
             return Json(isUnique);
         }
 
         [HttpPost]
-        public JsonResult IsUniqueMobile(string mobileNumber,string? employeeCode)
+        public async Task<JsonResult> IsUniqueMobile(string mobileNumber,string? employeeCode)
         {
-            var isUnique = _employee_DAL.IsMobileUnique(mobileNumber, employeeCode);
+            var isUnique = await _employee_DAL.IsMobileUnique(mobileNumber, employeeCode);
             return Json(isUnique);
         }
 
         [HttpPost]
-        public JsonResult IsUniquePan(string panNumber, string? employeeCode)
+        public async Task<JsonResult> IsUniquePan(string panNumber, string? employeeCode)
         {
-            var isUnique = _employee_DAL.IsPanUnique(panNumber, employeeCode);
+            var isUnique = await _employee_DAL.IsPanUnique(panNumber, employeeCode);
             return Json(isUnique);
         }
 
         [HttpPost]
-        public JsonResult IsUniquePassport(string passportNumber, string? employeeCode)
+        public async Task<JsonResult> IsUniquePassport(string passportNumber, string? employeeCode)
         {
-            var isUnique = _employee_DAL.IsPassportUnique(passportNumber,employeeCode);
+            var isUnique = await _employee_DAL.IsPassportUnique(passportNumber, employeeCode);
             return Json(isUnique);
         }
 
+        [HttpPost]
+        public async Task<JsonResult> ValidateEmployeeFields(EmployeeUpdateViewModel model)
+        {
+            var errors = new Dictionary<string, string>();
+
+            if (!await _employee_DAL.IsEmailUnique(model.EmailAddress, model.EmployeeCode))
+                errors["EmailAddress"] = "This email address is already in use.";
+
+            if (!await _employee_DAL.IsMobileUnique(model.MobileNumber, model.EmployeeCode))
+                errors["MobileNumber"] = "This mobile number is already in use.";
+
+            if (!await _employee_DAL.IsPanUnique(model.PanNumber, model.EmployeeCode))
+                errors["PanNumber"] = "This PAN number is already in use.";
+
+            if (!await _employee_DAL.IsPassportUnique(model.PassportNumber, model.EmployeeCode))
+                errors["PassportNumber"] = "This passport number is already in use.";
+
+            // Return validation results
+            return Json(new
+            {
+                isValid = errors.Count == 0, // No errors if count is 0
+                errors
+            });
+        }
 
     }
 }

@@ -112,7 +112,7 @@
     <div class="col-md-8">
         <form asp-action="UpdateEmployee" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="EmployeeCode" />
+            <input type="hidden" asp-for="EmployeeCode" id="EmployeeCode" value="@Model.EmployeeCode" />
             <input type="hidden" asp-for="ExistingPhotoPath" />
             <input type="hidden" id="hiddenStateId" value="@Model.StateId" />
             <input type="hidden" id="hiddenCityId" value="@Model.CityId" />
@@ -154,39 +154,43 @@
             </div>
             <div class="form-group">
                 <label asp-for="PanNumber" class="control-label"></label>
-                <input asp-for="PanNumber" class="form-control" />
+                <input asp-for="PanNumber" class="form-control" id="PanNumber" />
                 <span asp-validation-for="PanNumber" class="text-danger"></span>
-                @if (ViewBag.pancard != null)
+                <span id="panError" class="text-danger"></span>
+               @*  @if (ViewBag.pancard != null)
                 {
                     <span class="text-danger">@ViewBag.pancard</span>
-                }
+                } *@
             </div>
             <div class="form-group">
                 <label asp-for="PassportNumber" class="control-label"></label>
-                <input asp-for="PassportNumber" class="form-control" />
+                <input asp-for="PassportNumber" class="form-control" id="PassportNumber" />
                 <span asp-validation-for="PassportNumber" class="text-danger"></span>
-                @if (ViewBag.passport != null)
+                <span id="passportError" class="text-danger"></span>
+               @*  @if (ViewBag.passport != null)
                 {
                     <span class="text-danger">@ViewBag.passport</span>
-                }
+                } *@
             </div>
             <div class="form-group">
                 <label asp-for="MobileNumber" class="control-label"></label>
-                <input asp-for="MobileNumber" class="form-control" />
+                <input asp-for="MobileNumber" class="form-control" id="MobileNumber" />
                 <span asp-validation-for="MobileNumber" class="text-danger"></span>
-                @if (ViewBag.moblie != null)
+                <span id="mobileError" class="text-danger"></span>
+               @*  @if (ViewBag.moblie != null)
                 {
                     <span class="text-danger">@ViewBag.moblie</span>
-                }
+                } *@
             </div>
             <div class="form-group">
                 <label asp-for="EmailAddress" class="control-label"></label>
-                <input asp-for="EmailAddress" class="form-control" id="EmailAddress  />
+                <input asp-for="EmailAddress" class="form-control" id="EmailAddress" />
                 <span asp-validation-for="EmailAddress" class="text-danger"></span>
-                @if (ViewBag.email != null)
+                <span id="emailError" class="text-danger"></span>
+               @*  @if (ViewBag.email != null)
                 {
                     <span class="text-danger">@ViewBag.email</span>
-                }
+                } *@
             </div>
             <div class="form-group">
                 <label asp-for="DateOfBirth" class="control-label"></label>
@@ -230,7 +234,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" id="submitBtn" value="Update" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -378,34 +382,93 @@
                     });
                 }
             });
+         //   <------------------------------------>
+
+            // $('#EmailAddress').blur(function () {
+            //     const emailAddress = $(this).val();
+            //     const employeeCode = $('#EmployeeCode').val()
+            //     debugger;
+            //     if (emailAddress) {
+            //         // Make AJAX call to check email uniqueness
+            //         $.ajax({
+            //             url: '/Employee/IsUniqueEmail', // Controller endpoint
+            //             type: 'POST',
+            //             //   data:  email ,
+            //             data: { emailAddress: emailAddress, employeeCode: employeeCode },
+            //            // data: JSON.stringify({ emailAddress, employeeCode }),
+            //             success: function (isUnique) {
+            //                 if (isUnique) {
+            //                     // Clear any previous error message
+            //                     $('#emailError').text('');
+            //                 } else {
+            //                     // Show error message
+            //                     $('#emailError').text('This email address is already in use.');
+            //                 }
+            //             },
+            //             error: function (xhr, status, error) {
+            //                 console.error('Error checking email uniqueness:', status, error);
+            //                 alert('An error occurred while validating the email. Please try again.');
+            //             }
+            //         });
+            //     }
+            // });
+          //  <------------------------------------------>
+            $(document).ready(function () {
+                $('#submitBtn').click(function (e) {
+                    e.preventDefault(); // Prevent default form submission
+
+                    // Collect values from form inputs
+                    const employeeData = {
+                        EmployeeCode: $('#EmployeeCode').val(),
+                        EmailAddress: $('#EmailAddress').val(),
+                        MobileNumber: $('#MobileNumber').val(),
+                        PanNumber: $('#PanNumber').val(),
+                        PassportNumber: $('#PassportNumber').val(),
+                    };
+
+                    // Clear any previous error messages
+                    $('#emailError').text('');
+                    $('#mobileError').text('');
+                    $('#panError').text('');
+                    $('#passportError').text('');
+
+                    // Perform AJAX request for validation
+                    $.ajax({
+                        url: '/Employee/ValidateEmployeeFields',
+                        type: 'POST',
+                        data: employeeData,
+                        success: function (response) {
+                            // Check for validation errors
+                            if (!response.isValid) {
+                                // Display errors for individual fields
+                                if (response.errors.EmailAddress) {
+                                    $('#emailError').text(response.errors.EmailAddress);
+                                }
+                                if (response.errors.MobileNumber) {
+                                    $('#mobileError').text(response.errors.MobileNumber);
+                                }
+                                if (response.errors.PanNumber) {
+                                    $('#panError').text(response.errors.PanNumber);
+                                }
+                                if (response.errors.PassportNumber) {
+                                    $('#passportError').text(response.errors.PassportNumber);
+                                }
+                            } else {
+                                // No errors, submit the form
+                                $('form').submit();
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Validation failed:', status, error);
+                            alert('An error occurred during validation. Please try again.');
+                        }
+                    });
+                });
+            });
+                
+          // <----------------------------------------->
+
         });
 
-        $('#EmailAddress').blur(function () {
-            const email = $(this).val();
-            debugger;
-            if (email) {
-                // Make AJAX call to check email uniqueness
-                $.ajax({
-                    url: '/Employee/IsUniqueEmail', // Controller endpoint
-                    type: 'POST',
-                    contentType: 'application/json',
-                 //   data:  email ,
-                    data:  JSON.stringify({ email: email }),
-                    success: function (isUnique) {
-                        if (isUnique) {
-                            // Clear any previous error message
-                            $('#emailError').text('');
-                        } else {
-                            // Show error message
-                            $('#emailError').text('This email address is already in use.');
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error checking email uniqueness:', status, error);
-                        alert('An error occurred while validating the email. Please try again.');
-                    }
-                });
-            }
-        });
     </script>
 }
