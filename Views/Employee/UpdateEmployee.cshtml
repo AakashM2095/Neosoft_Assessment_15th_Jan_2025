@@ -154,7 +154,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="PanNumber" class="control-label"></label>
-                <input asp-for="PanNumber" class="form-control" id="PanNumber" />
+                <input asp-for="PanNumber" class="form-control uppercase" id="PanNumber" />
                 <span asp-validation-for="PanNumber" class="text-danger"></span>
                 <span id="panError" class="text-danger"></span>
                @*  @if (ViewBag.pancard != null)
@@ -164,7 +164,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="PassportNumber" class="control-label"></label>
-                <input asp-for="PassportNumber" class="form-control" id="PassportNumber" />
+                <input asp-for="PassportNumber" class="form-control uppercase" id="PassportNumber" />
                 <span asp-validation-for="PassportNumber" class="text-danger"></span>
                 <span id="passportError" class="text-danger"></span>
                @*  @if (ViewBag.passport != null)
@@ -252,16 +252,16 @@
         $(document).ready(function () {
             // Initialize datepicker
             //$('.datepicker').datepicker({ format: 'mm/dd/yyyy' });
+            $('input.uppercase').on('keyup', function () {
+                $(this).val($(this).val().toUpperCase());
+            });
 
-            // Load states on country change
             const hiddenStateId = $('#hiddenStateId').val();
             const hiddenCityId = $('#hiddenCityId').val();
 
-            // Get initial country ID from the model
-            // Get initial country ID from the model
+        
             var initialCountryId = $('#CountryDropDown').val();
 
-            // Load states for the initial country (if any)
             if (initialCountryId) {
                 $.ajax({
                     url: '/Employee/GetStates',
@@ -412,59 +412,109 @@
             //         });
             //     }
             // });
-          //  <------------------------------------------>
-            $(document).ready(function () {
-                $('#submitBtn').click(function (e) {
-                    e.preventDefault(); // Prevent default form submission
+            $('#submitBtn').click(function (e) {
+                e.preventDefault(); 
 
-                    // Collect values from form inputs
-                    const employeeData = {
-                        EmployeeCode: $('#EmployeeCode').val(),
-                        EmailAddress: $('#EmailAddress').val(),
-                        MobileNumber: $('#MobileNumber').val(),
-                        PanNumber: $('#PanNumber').val(),
-                        PassportNumber: $('#PassportNumber').val(),
-                    };
+                const employeeData = {
+                    EmployeeCode: $('#EmployeeCode').val(),
+                    EmailAddress: $('#EmailAddress').val(),
+                    MobileNumber: $('#MobileNumber').val(),
+                    PanNumber: $('#PanNumber').val(),
+                    PassportNumber: $('#PassportNumber').val(),
+                };
 
-                    // Clear any previous error messages
-                    $('#emailError').text('');
-                    $('#mobileError').text('');
-                    $('#panError').text('');
-                    $('#passportError').text('');
+               
+                $('#emailError').text('');
+                $('#mobileError').text('');
+                $('#panError').text('');
+                $('#passportError').text('');
 
-                    // Perform AJAX request for validation
-                    $.ajax({
-                        url: '/Employee/ValidateEmployeeFields',
-                        type: 'POST',
-                        data: employeeData,
-                        success: function (response) {
-                            // Check for validation errors
-                            if (!response.isValid) {
-                                // Display errors for individual fields
-                                if (response.errors.EmailAddress) {
-                                    $('#emailError').text(response.errors.EmailAddress);
-                                }
-                                if (response.errors.MobileNumber) {
-                                    $('#mobileError').text(response.errors.MobileNumber);
-                                }
-                                if (response.errors.PanNumber) {
-                                    $('#panError').text(response.errors.PanNumber);
-                                }
-                                if (response.errors.PassportNumber) {
-                                    $('#passportError').text(response.errors.PassportNumber);
-                                }
-                            } else {
-                                // No errors, submit the form
-                                $('form').submit();
+                
+                $.ajax({
+                    url: '/Employee/ValidateEmployeeFields',
+                    type: 'POST',
+                    data: employeeData,
+                    success: function (response) {
+                        // Check for validation errors
+                        if (!response.isValid) {
+                            
+                            if (response.errors.EmailAddress) {
+                                $('#emailError').text(response.errors.EmailAddress);
                             }
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Validation failed:', status, error);
-                            alert('An error occurred during validation. Please try again.');
+                            if (response.errors.MobileNumber) {
+                                $('#mobileError').text(response.errors.MobileNumber);
+                            }
+                            if (response.errors.PanNumber) {
+                                $('#panError').text(response.errors.PanNumber);
+                            }
+                            if (response.errors.PassportNumber) {
+                                $('#passportError').text(response.errors.PassportNumber);
+                            }
+                        } else {
+                            
+                            $('form').submit();
                         }
-                    });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Validation failed:', status, error);
+                        // alert('An error occurred during validation. Please try again.');
+                    }
                 });
             });
+
+          //  <------------------------------------------>
+            // $(document).ready(function () {
+            //     $('#submitBtn').click(function (e) {
+            //         e.preventDefault(); // Prevent default form submission
+
+            //         // Collect values from form inputs
+            //         const employeeData = {
+            //             EmployeeCode: $('#EmployeeCode').val(),
+            //             EmailAddress: $('#EmailAddress').val(),
+            //             MobileNumber: $('#MobileNumber').val(),
+            //             PanNumber: $('#PanNumber').val(),
+            //             PassportNumber: $('#PassportNumber').val(),
+            //         };
+
+            //         // Clear any previous error messages
+            //         $('#emailError').text('');
+            //         $('#mobileError').text('');
+            //         $('#panError').text('');
+            //         $('#passportError').text('');
+
+            //         // Perform AJAX request for validation
+            //         $.ajax({
+            //             url: '/Employee/ValidateEmployeeFields',
+            //             type: 'POST',
+            //             data: employeeData,
+            //             success: function (response) {
+            //                 // Check for validation errors
+            //                 if (!response.isValid) {
+            //                     // Display errors for individual fields
+            //                     if (response.errors.EmailAddress) {
+            //                         $('#emailError').text(response.errors.EmailAddress);
+            //                     }
+            //                     if (response.errors.MobileNumber) {
+            //                         $('#mobileError').text(response.errors.MobileNumber);
+            //                     }
+            //                     if (response.errors.PanNumber) {
+            //                         $('#panError').text(response.errors.PanNumber);
+            //                     }
+            //                     if (response.errors.PassportNumber) {
+            //                         $('#passportError').text(response.errors.PassportNumber);
+            //                     }
+            //                 } else {
+            //                     // No errors, submit the form
+            //                     $('form').submit();
+            //                 }
+            //             },
+            //             error: function (xhr, status, error) {
+            //                 console.error('Validation failed:', status, error);
+            //                // alert('An error occurred during validation. Please try again.');
+            //             }
+            //         });
+            //     });
+            // });
                 
           // <----------------------------------------->
 

@@ -61,8 +61,8 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
         {
 
             model.IsActive = model.IsActiveBool ? (byte)1 : (byte)0;
-            bool email = await _employee_DAL.IsEmailUnique(model.EmailAddress,model.EmployeeCode);
-            bool moblie = await _employee_DAL.IsMobileUnique(model.MobileNumber,model.EmployeeCode);
+            bool email = await _employee_DAL.IsEmailUnique(model.EmailAddress, model.EmployeeCode);
+            bool moblie = await _employee_DAL.IsMobileUnique(model.MobileNumber, model.EmployeeCode);
             bool pancard = await _employee_DAL.IsPanUnique(model.PanNumber, model.EmployeeCode);
             bool passport = await _employee_DAL.IsPassportUnique(model.PassportNumber, model.EmployeeCode);
 
@@ -115,6 +115,50 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
                 return View(model);
             }
         }
+
+        //[HttpPost]
+        //public async Task<IActionResult> AddEmployee(EmployeeViewModel model)
+        //{
+        //    model.IsActive = model.IsActiveBool ? (byte)1 : (byte)0;
+
+        //        if (ModelState.IsValid)
+        //        {
+
+        //            string uniqueFileName = null;
+        //            if (model.Image != null)
+        //            {
+        //                uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Image.FileName;
+        //                string uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+        //                string uniqueFilePath = Path.Combine(uploadFolder, uniqueFileName);
+        //                model.Image.CopyTo(new FileStream(uniqueFilePath, FileMode.Create));
+        //            }
+
+        //            EmployeeMaster employee = new EmployeeMaster
+        //            {
+        //                FirstName = model.FirstName,
+        //                LastName = model.LastName,
+        //                CountryId = model.CountryId,
+        //                StateId = model.StateId,
+        //                CityId = model.CityId,
+        //                EmailAddress = model.EmailAddress,
+        //                MobileNumber = model.MobileNumber,
+        //                PanNumber = model.PanNumber,
+        //                PassportNumber = model.PassportNumber,
+        //                ProfileImage = uniqueFileName,
+        //                Gender = model.Gender,
+        //                IsActive = model.IsActive,
+        //                DateOfBirth = model.DateOfBirth,
+        //                DateOfJoinee = model.DateOfJoinee
+        //            };
+
+        //            await _employee_DAL.InsertEmployee(employee);
+        //            return RedirectToAction("Index");
+        //        }
+
+        //        return RedirectToAction("Index");
+        //}
+
+
         [HttpGet]
         public async Task<IActionResult> UpdateEmployee(string employeeCode)
         {
@@ -308,22 +352,47 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
         {
             var errors = new Dictionary<string, string>();
 
-            if (!await _employee_DAL.IsEmailUnique(model.EmailAddress, model.EmployeeCode))
+            if (await _employee_DAL.IsEmailUnique(model.EmailAddress, model.EmployeeCode))
                 errors["EmailAddress"] = "This email address is already in use.";
 
-            if (!await _employee_DAL.IsMobileUnique(model.MobileNumber, model.EmployeeCode))
+            if (await _employee_DAL.IsMobileUnique(model.MobileNumber, model.EmployeeCode))
                 errors["MobileNumber"] = "This mobile number is already in use.";
 
-            if (!await _employee_DAL.IsPanUnique(model.PanNumber, model.EmployeeCode))
+            if (await _employee_DAL.IsPanUnique(model.PanNumber, model.EmployeeCode))
                 errors["PanNumber"] = "This PAN number is already in use.";
 
-            if (!await _employee_DAL.IsPassportUnique(model.PassportNumber, model.EmployeeCode))
+            if (await _employee_DAL.IsPassportUnique(model.PassportNumber, model.EmployeeCode))
                 errors["PassportNumber"] = "This passport number is already in use.";
 
             // Return validation results
             return Json(new
             {
                 isValid = errors.Count == 0, // No errors if count is 0
+                errors
+            });
+        }
+
+
+        [HttpPost]
+        public async Task<JsonResult> ValidateEmployeeFieldsInsert(EmployeeViewModel model)
+        {
+            var errors = new Dictionary<string, string>();
+
+            if (await _employee_DAL.IsEmailUnique(model.EmailAddress, model.EmployeeCode))
+                errors["EmailAddress"] = "This email address is already in use.";
+
+            if (await _employee_DAL.IsMobileUnique(model.MobileNumber, model.EmployeeCode))
+                errors["MobileNumber"] = "This mobile number is already in use.";
+
+            if (await _employee_DAL.IsPanUnique(model.PanNumber, model.EmployeeCode))
+                errors["PanNumber"] = "This PAN number is already in use.";
+
+            if (await _employee_DAL.IsPassportUnique(model.PassportNumber, model.EmployeeCode))
+                errors["PassportNumber"] = "This passport number is already in use.";
+
+            return Json(new
+            {
+                isValid = errors.Count == 0, 
                 errors
             });
         }

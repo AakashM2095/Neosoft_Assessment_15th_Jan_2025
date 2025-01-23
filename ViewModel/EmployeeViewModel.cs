@@ -29,6 +29,7 @@ namespace Neosoft_Assignment_15_02_2025.ViewModel
 
         [Required(ErrorMessage = "Mobile Number is required.")]
         [Phone(ErrorMessage = "Invalid Mobile Number format.")]
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Mobile Number must be 9 characters.")]
         public string? MobileNumber { get; set; }
 
         [Required(ErrorMessage = "Pan Number is required.")]

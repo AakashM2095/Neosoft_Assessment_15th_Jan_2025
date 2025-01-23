@@ -70,14 +70,14 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            // Initialize DataTables
+            
             $('#employeeTable').DataTable({
-                paging: true,         // Enable pagination
-                searching: true,      // Enable search
-                ordering: true,       // Enable column sorting
-                responsive: true,     // Make it responsive
+                paging: true,         
+                searching: true,     
+                ordering: true,       
+                responsive: true,     
                 columnDefs: [
-                    { orderable: false, targets: -1 } // Disable ordering for the last column (Actions)
+                    { orderable: false, targets: -1 } 
                 ]
             });
 
@@ -126,7 +126,7 @@
                 });
             });
 
-            // Edit button click
+            
             $('#employeeTable').on('click', '.edit-btn', function () {
                 const employeeCode = $(this).data('id');
                 window.location.href = `/Employee/UpdateEmployee?employeeCode=${employeeCode}`;

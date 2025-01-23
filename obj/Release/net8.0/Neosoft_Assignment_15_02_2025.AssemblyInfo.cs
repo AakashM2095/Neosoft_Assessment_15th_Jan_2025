@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Neosoft_Assignment_15_02_2025")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b36f4322ab61e92b70117e464890fdf5080fb9c4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+edd9a1423e74eda7f1b756fbaaaba2549f6d1def")]
 [assembly: System.Reflection.AssemblyProductAttribute("Neosoft_Assignment_15_02_2025")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Neosoft_Assignment_15_02_2025")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -150,7 +150,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="PanNumber" class="control-label"></label>
-                <input asp-for="PanNumber" class="form-control" />
+                <input asp-for="PanNumber" class="form-control uppercase" id="PanNumber" />
                 <span asp-validation-for="PanNumber" class="text-danger"></span>
                 @if (ViewBag.pancard != null)
                 {
@@ -159,20 +159,22 @@
             </div>
             <div class="form-group">
                 <label asp-for="PassportNumber" class="control-label"></label>
-                <input asp-for="PassportNumber" class="form-control" />
+                <input asp-for="PassportNumber" class="form-control uppercase" id="PassportNumber" />
                 <span asp-validation-for="PassportNumber" class="text-danger"></span>
-                @if (ViewBag.passport != null)
+                <span id="passportError" class="text-danger"></span>
+                 @if (ViewBag.passport != null)
                 {
-                    <span class="text-danger">@ViewBag.passport</span>
+                <span class="text-danger">@ViewBag.passport</span>
                 }
             </div>
             <div class="form-group">
                 <label asp-for="MobileNumber" class="control-label"></label>
-                <input asp-for="MobileNumber" class="form-control" />
+                <input asp-for="MobileNumber" class="form-control" id="MobileNumber" />
                 <span asp-validation-for="MobileNumber" class="text-danger"></span>
-                @if (ViewBag.moblie != null)
+                <span id="mobileError" class="text-danger"></span>
+                  @if (ViewBag.moblie != null)
                 {
-                    <span class="text-danger">@ViewBag.moblie</span>
+                <span class="text-danger">@ViewBag.moblie</span>
                 }
 
             </div>
@@ -180,10 +182,10 @@
                 <label asp-for="EmailAddress" class="control-label"></label>
                 <input asp-for="EmailAddress" class="form-control" id="EmailAddress" />
                 <span asp-validation-for="EmailAddress" class="text-danger"></span>
-                @* <span id="emailError" class="text-danger"></span> *@
-                @if (ViewBag.email != null)
+                <span id="emailError" class="text-danger"></span>
+                 @if (ViewBag.email != null)
                 {
-                    <span class="text-danger">@ViewBag.email</span>
+                <span class="text-danger">@ViewBag.email</span>
                 }
             </div>
             <div class="form-group">
@@ -218,7 +220,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" id="submitBtn" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -234,7 +236,16 @@
     <script>
         $(document).ready(function () {
             // Initialize datepicker
+            const today = new Date().toISOString().split('T')[0];
+            $('#DateOfJoinee').attr('max', today);
+            const minBOD = new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0];
+            $('#DateOfBirth').attr('max', minBOD);
+
             //$('.datepicker').datepicker({ format: 'mm/dd/yyyy' });
+
+            $('input.uppercase').on('keyup', function () {
+                $(this).val($(this).val().toUpperCase());
+            });
 
             // Load states on country change
             $('#CountryDropDown').change(function () {
@@ -302,6 +313,56 @@
                     });
                 }
             });
+            //<------------------------------>
+            // $('#submitBtn').click(function (e) {
+            //   //  e.preventDefault(); // Prevent default form submission
+
+            //     const employeeData = {
+            //         EmailAddress: $('#EmailAddress').val(),
+            //         MobileNumber: $('#MobileNumber').val(),
+            //         PanNumber: $('#PanNumber').val(),
+            //         PassportNumber: $('#PassportNumber').val(),
+            //     };
+
+            //     // Clear any previous error messages
+            //     $('#emailError').text('');
+            //     $('#mobileError').text('');
+            //     $('#panError').text('');
+            //     $('#passportError').text('');
+
+            //     // Perform AJAX request for validation
+            //     $.ajax({
+            //         url: '/Employee/ValidateEmployeeFieldsInsert',
+            //         type: 'POST',
+            //         data: employeeData,
+            //         success: function (response) {
+                       
+            //             if (!response.isValid) {
+                            
+            //                 if (response.errors.EmailAddress) {
+            //                     $('#emailError').text(response.errors.EmailAddress);
+            //                 }
+            //                 if (response.errors.MobileNumber) {
+            //                     $('#mobileError').text(response.errors.MobileNumber);
+            //                 }
+            //                 if (response.errors.PanNumber) {
+            //                     $('#panError').text(response.errors.PanNumber);
+            //                 }
+            //                 if (response.errors.PassportNumber) {
+            //                     $('#passportError').text(response.errors.PassportNumber);
+            //                 }
+            //             } else {
+            //                 $('form').submit();
+            //             }
+            //         },
+            //         error: function (xhr, status, error) {
+            //             console.error('Validation failed:', status, error);
+            //             // alert('An error occurred during validation. Please try again.');
+            //         }
+            //     });
+            // });
+
+            //<----------------------------->
         });
 
         // $('#EmailAddress').blur(function () {

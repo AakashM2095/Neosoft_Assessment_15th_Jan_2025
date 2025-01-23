@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Neosoft_Assignment_15_02_2025.Interface;
 using Neosoft_Assignment_15_02_2025.Models;
 using System.Data;
@@ -242,8 +241,6 @@ namespace Neosoft_Assignment_15_02_2025.DAL
             {
                 throw new Exception("Error in Country is : " + ex);
             }
-
-
         }
 
         public async Task<List<State>> GetStatesAsync(int countryId)
