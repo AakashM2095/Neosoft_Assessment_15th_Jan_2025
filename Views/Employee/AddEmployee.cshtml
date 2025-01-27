@@ -6,7 +6,6 @@
 
 <head>
     <style>
-        /* General Form Styling */
         form {
             background-color: #f9f9f9;
             padding: 20px;
@@ -15,18 +14,15 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        /* Form Group Styling */
         .form-group {
             margin-bottom: 20px;
         }
 
-        /* Labels */
         label {
             font-weight: 600;
             color: #333;
         }
 
-        /* Input Fields */
         input.form-control, select.form-control {
             height: 40px;
             border: 1px solid #ccc;
@@ -36,19 +32,16 @@
             transition: all 0.2s ease;
         }
 
-            /* Input Focus */
             input.form-control:focus, select.form-control:focus {
                 border-color: #007bff;
                 box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
             }
 
-        /* Validation Errors */
         .text-danger {
             font-size: 13px;
             color: #d9534f;
         }
 
-        /* Buttons */
         .btn {
             font-size: 16px;
             font-weight: bold;
@@ -71,7 +64,6 @@
                 color: #fff;
             }
 
-        /* Checkbox and Radio */
         .form-check-input {
             margin-right: 10px;
         }
@@ -81,7 +73,6 @@
             color: #333;
         }
 
-        /* Section Titles */
         h4 {
             font-size: 24px;
             font-weight: bold;
@@ -89,7 +80,6 @@
             margin-bottom: 20px;
         }
 
-        /* Dropdown Styling */
         select.form-control {
             appearance: none;
             background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%27http%3A//www.w3.org/2000/svg%27 viewBox%3D%270 0 4 5%27%3E%3Cpath fill%3D%27%23007bff%27 d%3D%27M2 0L0 2h4z%27/%3E%3C/svg%3E');
@@ -98,7 +88,6 @@
             background-size: 10px;
         }
 
-        /* Date Inputs */
         input.datepicker, input.date {
             position: relative;
             padding-right: 30px;
@@ -113,6 +102,9 @@
     <div class="col-md-8">
         <form asp-action="AddEmployee" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" id="hiddenStateId" value="@ViewBag.StateId" />
+            <input type="hidden" id="hiddenCityId" value="@ViewBag.CityId" />
+            <input type="hidden" id="base64Image" name="Base64Image" value="@ViewBag.Base64Image" />
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control" />
@@ -152,6 +144,7 @@
                 <label asp-for="PanNumber" class="control-label"></label>
                 <input asp-for="PanNumber" class="form-control uppercase" id="PanNumber" />
                 <span asp-validation-for="PanNumber" class="text-danger"></span>
+                <span id="panNumberError" class="text-danger"></span>
                 @if (ViewBag.pancard != null)
                 {
                     <span class="text-danger">@ViewBag.pancard</span>
@@ -162,9 +155,9 @@
                 <input asp-for="PassportNumber" class="form-control uppercase" id="PassportNumber" />
                 <span asp-validation-for="PassportNumber" class="text-danger"></span>
                 <span id="passportError" class="text-danger"></span>
-                 @if (ViewBag.passport != null)
+                @if (ViewBag.passport != null)
                 {
-                <span class="text-danger">@ViewBag.passport</span>
+                    <span class="text-danger">@ViewBag.passport</span>
                 }
             </div>
             <div class="form-group">
@@ -172,9 +165,9 @@
                 <input asp-for="MobileNumber" class="form-control" id="MobileNumber" />
                 <span asp-validation-for="MobileNumber" class="text-danger"></span>
                 <span id="mobileError" class="text-danger"></span>
-                  @if (ViewBag.moblie != null)
+                @if (ViewBag.moblie != null)
                 {
-                <span class="text-danger">@ViewBag.moblie</span>
+                    <span class="text-danger">@ViewBag.moblie</span>
                 }
 
             </div>
@@ -183,9 +176,9 @@
                 <input asp-for="EmailAddress" class="form-control" id="EmailAddress" />
                 <span asp-validation-for="EmailAddress" class="text-danger"></span>
                 <span id="emailError" class="text-danger"></span>
-                 @if (ViewBag.email != null)
+                @if (ViewBag.email != null)
                 {
-                <span class="text-danger">@ViewBag.email</span>
+                    <span class="text-danger">@ViewBag.email</span>
                 }
             </div>
             <div class="form-group">
@@ -200,7 +193,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Image" class="control-label"></label>
-                <input asp-for="Image" type="file" class="form-control" />
+                <input asp-for="Image" type="file" class="form-control" id="imageFile" />
                 <span asp-validation-for="Image" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -247,10 +240,73 @@
                 $(this).val($(this).val().toUpperCase());
             });
 
+            const hiddenStateId = $('#hiddenStateId').val();
+            const hiddenCityId = $('#hiddenCityId').val();
+            const base64Image = $('#base64Image').val();
+
+            var initialCountryId = $('#CountryDropDown').val();
+
+            if (initialCountryId) {
+                $.ajax({
+                    url: '/Employee/GetStates',
+                    type: 'GET',
+                    data: { countryId: initialCountryId },
+                    success: function (data) {
+                        if (data.length > 0) {
+                            const $stateDropdown = $('#stateDropdown');
+                            $.each(data, function (index, state) {
+                                $stateDropdown.append($('<option>', {
+                                    value: state.row_Id,
+                                    text: state.stateName
+                                }));
+                            });
+
+                            // Get initial state ID from the model
+                            var initialStateId = $('#hiddenStateId').val();
+
+                            // Load cities for the initial state (if any)
+                            if (initialStateId) {
+                                $.ajax({
+                                    url: '/Employee/GetCities',
+                                    type: 'GET',
+                                    data: { stateId: initialStateId },
+                                    success: function (data) {
+                                        if (data.length > 0) {
+                                            const $cityDropdown = $('#cityDropdown');
+                                            $.each(data, function (index, city) {
+                                                $cityDropdown.append($('<option>', {
+                                                    value: city.row_Id,
+                                                    text: city.cityName
+                                                }));
+                                            });
+
+                                            $('#stateDropdown').val(hiddenStateId);
+                                            $('#cityDropdown').val(hiddenCityId);
+                                            $('#imageFile').val(base64Image);
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error('Error fetching cities:', status, error);
+                                        alert('Error loading cities.');
+                                    }
+                                });
+                            }
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching states:', status, error);
+                        alert('Error loading states.');
+                    }
+                });
+            }
+
+
+            //<--------------------------------------------->
+
             // Load states on country change
             $('#CountryDropDown').change(function () {
                 const countryId = parseInt($(this).val());
-                debugger;
+               // debugger;
                 $('#stateDropdown').empty().append('<option value="">Select State</option>');
                 $('#cityDropdown').empty().append('<option value="">Select City</option>');
 
@@ -284,7 +340,7 @@
             // Load cities on state change
             $('#stateDropdown').change(function () {
                 const stateId = parseInt($(this).val());
-                debugger;
+                //debugger;
                 $('#cityDropdown').empty().append('<option value="">Select City</option>');
 
                 if (stateId) {
@@ -315,30 +371,31 @@
             });
             //<------------------------------>
             // $('#submitBtn').click(function (e) {
-            //   //  e.preventDefault(); // Prevent default form submission
+            //     debugger;
+            //     e.preventDefault();// prevent default form submission
 
-            //     const employeeData = {
-            //         EmailAddress: $('#EmailAddress').val(),
-            //         MobileNumber: $('#MobileNumber').val(),
-            //         PanNumber: $('#PanNumber').val(),
-            //         PassportNumber: $('#PassportNumber').val(),
+            //     const employeedata = {
+            //         emailaddress: $('#EmailAddress').val(),
+            //         mobilenumber: $('#MobileNumber').val(),
+            //         pannumber: $('#PanNumber').val(),
+            //         passportnumber: $('#PassportNumber').val(),
             //     };
 
-            //     // Clear any previous error messages
+            //     // clear any previous error messages
             //     $('#emailError').text('');
             //     $('#mobileError').text('');
-            //     $('#panError').text('');
+            //     $('#panNumberError').text('');
             //     $('#passportError').text('');
 
-            //     // Perform AJAX request for validation
+            //     // perform ajax request for validation
             //     $.ajax({
             //         url: '/Employee/ValidateEmployeeFieldsInsert',
             //         type: 'POST',
-            //         data: employeeData,
+            //         data: employeedata,
             //         success: function (response) {
-                       
-            //             if (!response.isValid) {
-                            
+
+            //             if (!response.isvalid) {
+
             //                 if (response.errors.EmailAddress) {
             //                     $('#emailError').text(response.errors.EmailAddress);
             //                 }
@@ -346,18 +403,19 @@
             //                     $('#mobileError').text(response.errors.MobileNumber);
             //                 }
             //                 if (response.errors.PanNumber) {
-            //                     $('#panError').text(response.errors.PanNumber);
+            //                     $('#panNumberError').text(response.errors.PanNumber);
             //                 }
             //                 if (response.errors.PassportNumber) {
             //                     $('#passportError').text(response.errors.PassportNumber);
             //                 }
+                            
             //             } else {
             //                 $('form').submit();
             //             }
             //         },
             //         error: function (xhr, status, error) {
-            //             console.error('Validation failed:', status, error);
-            //             // alert('An error occurred during validation. Please try again.');
+            //             console.error('validation failed:', status, error);
+            //             // alert('an error occurred during validation. please try again.');
             //         }
             //     });
             // });

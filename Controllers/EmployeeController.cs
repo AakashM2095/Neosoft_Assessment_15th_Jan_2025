@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Neosoft_Assignment_15_02_2025.Interface;
 using Neosoft_Assignment_15_02_2025.Models;
 using Neosoft_Assignment_15_02_2025.ViewModel;
+using System.Net.Mail;
 
 namespace Neosoft_Assignment_15_02_2025.Controllers
 {
@@ -111,7 +113,20 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
             }
             else
             {
+                if (model.Image != null)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await model.Image.CopyToAsync(memoryStream);
+                        // Convert the file to a Base64 string
+                        string base64Image = Convert.ToBase64String(memoryStream.ToArray());
+                        ViewBag.Base64Image = base64Image; // Pass it to the view
+                    }
+                }
                 ViewBag.Countries = await _employee_DAL.GetCountriesAsync();
+                ViewBag.StateId = model.StateId;
+                ViewBag.CountryId = model.CountryId;
+
                 return View(model);
             }
         }
@@ -319,32 +334,54 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllCities(int stateId) => Json(await _employee_DAL.GetAllCitiesAsync());
 
-        [HttpPost]
+        // [HttpPost]
+        [AcceptVerbs("Get", "Post")]
         public async Task<JsonResult> IsUniqueEmail(string emailAddress, string? employeeCode)
         {
             var isUnique = await _employee_DAL.IsEmailUnique(emailAddress, employeeCode);
-            return Json(isUnique);
+            if (isUnique == true) 
+            {
+                return Json($"The email '{emailAddress}' is already in use.");
+            }
+
+            return Json(true);
         }
 
-        [HttpPost]
+        //[HttpPost]
+        [AcceptVerbs("Get", "Post")]
         public async Task<JsonResult> IsUniqueMobile(string mobileNumber,string? employeeCode)
         {
             var isUnique = await _employee_DAL.IsMobileUnique(mobileNumber, employeeCode);
-            return Json(isUnique);
+
+            if (isUnique == true)
+            {
+                return Json($"The mobileNumber '{mobileNumber}' is already in use.");
+            }
+            return Json(true);
         }
 
-        [HttpPost]
+        //[HttpPost]
+        [AcceptVerbs("Get", "Post")]
         public async Task<JsonResult> IsUniquePan(string panNumber, string? employeeCode)
         {
             var isUnique = await _employee_DAL.IsPanUnique(panNumber, employeeCode);
-            return Json(isUnique);
+            if (isUnique == true)
+            {
+                return Json($"The panNumber '{panNumber}' is already in use.");
+            }
+            return Json(true);
         }
 
-        [HttpPost]
+        // [HttpPost]
+        [AcceptVerbs("Get", "Post")]
         public async Task<JsonResult> IsUniquePassport(string passportNumber, string? employeeCode)
         {
             var isUnique = await _employee_DAL.IsPassportUnique(passportNumber, employeeCode);
-            return Json(isUnique);
+            if (isUnique == true)
+            {
+                return Json($"The passportNumber '{passportNumber}' is already in use.");
+            }
+            return Json(true);
         }
 
         [HttpPost]
@@ -364,10 +401,9 @@ namespace Neosoft_Assignment_15_02_2025.Controllers
             if (await _employee_DAL.IsPassportUnique(model.PassportNumber, model.EmployeeCode))
                 errors["PassportNumber"] = "This passport number is already in use.";
 
-            // Return validation results
             return Json(new
             {
-                isValid = errors.Count == 0, // No errors if count is 0
+                isValid = errors.Count == 0,
                 errors
             });
         }

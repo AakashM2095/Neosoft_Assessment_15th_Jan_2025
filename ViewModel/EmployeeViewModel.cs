@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace Neosoft_Assignment_15_02_2025.ViewModel
 {
@@ -25,26 +26,32 @@ namespace Neosoft_Assignment_15_02_2025.ViewModel
 
         [Required(ErrorMessage = "Email Address is required.")]
         [EmailAddress(ErrorMessage = "Invalid Email Address format.")]
+        [Remote(action: "IsUniqueEmail", controller:"Employee")]
         public string? EmailAddress { get; set; }
 
         [Required(ErrorMessage = "Mobile Number is required.")]
         [Phone(ErrorMessage = "Invalid Mobile Number format.")]
         [StringLength(10, MinimumLength = 10, ErrorMessage = "Mobile Number must be 9 characters.")]
+        [Remote(action: "IsUniqueMobile", controller: "Employee")]
         public string? MobileNumber { get; set; }
 
         [Required(ErrorMessage = "Pan Number is required.")]
         [StringLength(10, MinimumLength = 10, ErrorMessage = "Pan Number must be 10 characters.")]
         [RegularExpression("^[A-Z]{5}[0-9]{4}[A-Z]{1}$", ErrorMessage = "Invalid Pan Number format.")]
+        [Remote(action: "IsUniquePan", controller: "Employee")]
         public string? PanNumber { get; set; }
 
         [Required(ErrorMessage = "Passport Number is required.")]
         [StringLength(15, MinimumLength = 5, ErrorMessage = "Passport Number should be between 5 and 15 characters.")]
         [RegularExpression("^[A-Z0-9]+$", ErrorMessage = "Invalid Passport Number format.")]
+        [Remote(action: "IsUniquePassport", controller: "Employee")]
         public string? PassportNumber { get; set; }
 
        [Required(ErrorMessage = "Profile Picture is required.")]
-       // [FileExtensions(Extensions = "jpg,png", ErrorMessage = "Profile picture must be in JPG or PNG format.")]
-       // [MaxFileSize(200 * 1024, ErrorMessage = "Profile picture size must be less than 200 KB.")]
+        // [FileExtensions(Extensions = "jpg,png,webp", ErrorMessage = "Profile picture must be in JPG or PNG format.")]
+        // [MaxFileSize(200 * 1024, ErrorMessage = "Profile picture size must be less than 200 KB.")]
+        // [FileExtensions(new[] { ".jpg", ".png", ".webp" }, ErrorMessage = "Profile picture must be in JPG, PNG, or WEBP format.")]
+        [RegularExpression(@"([a-zA-Z0-9\s_\\.\-:])+(.png|.jpg|.gif|.webp)$", ErrorMessage = "Only PNG, JPG, WEBP and GIF files are allowed.")]
         public IFormFile? Image { get; set; }
 
         [Required(ErrorMessage = "Gender is required.")]
@@ -102,5 +109,4 @@ namespace Neosoft_Assignment_15_02_2025.ViewModel
             return ValidationResult.Success;
         }
     }
-
 }
